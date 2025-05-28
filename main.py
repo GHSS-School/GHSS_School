@@ -46,7 +46,7 @@ def index():
 @app.route('/files', methods=["GET", "POST"])
 def files():
     if request.method == 'GET':
-        return render_template('files.html')
+        return render_template('files_upload.html')
 
     elif request.method == 'POST':
         try:
