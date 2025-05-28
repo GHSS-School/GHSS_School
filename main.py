@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 NOTICE_DIR = 'Notices'
 UPLOADS_DIR = 'Uploads'
+Achievements_DIR = 'Achievements'
 
 # Ensure the directories exist
 os.makedirs(NOTICE_DIR, exist_ok=True)
@@ -123,7 +124,7 @@ def achievements():
                 return redirect(url_for('achievements'))
 
             # Create folder path
-            folder_path = os.path.join(UPLOADS_DIR, folder_name)
+            folder_path = os.path.join(Achievements_DIR, folder_name)
             os.makedirs(folder_path, exist_ok=True)
 
             # Create data.txt file with specific format
