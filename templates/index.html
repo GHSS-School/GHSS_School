@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Notice</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      padding: 2rem; 
+      max-width: 700px; 
+      margin: auto; 
+      background-color: #f5f5f5;
+    }
+    
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label { 
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #555;
+    }
+    
+    input, textarea, select { 
+      width: 100%; 
+      padding: 0.75rem; 
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+    }
+    
+    button { 
+      background: #007bff;
+      color: white;
+      padding: 0.75rem 2rem; 
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+    
+    button:hover {
+      background: #0056b3;
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+    
+    .message { 
+      margin: 1rem 0; 
+      padding: 1rem; 
+      border-radius: 5px; 
+      border-left: 4px solid;
+    }
+    
+    .success { 
+      background-color: #d4edda; 
+      color: #155724; 
+      border-left-color: #28a745;
+    }
+    
+    .danger { 
+      background-color: #f8d7da; 
+      color: #721c24; 
+      border-left-color: #dc3545;
+    }
+    
+    .info-text {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+    
+    .id-display {
+      background: #e9ecef;
+      padding: 0.75rem;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      color: #495057;
+    }
+    
+    input[type="checkbox"] {
+      width: auto !important;
+      margin-right: 0.5rem;
+      transform: scale(1.2);
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Create a Notice</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" id="noticeForm">
+      <div class="form-group">
+        <label>Notice ID:</label>
+        <div class="id-display" id="noticeIdDisplay">N-20250528-001</div>
+        <input type="hidden" name="noticeId" id="noticeIdInput" />
+        <div class="info-text">Auto-generated based on current date and sequence</div>
+      </div>
+
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="title" required maxlength="200" placeholder="Enter notice title..." />
+        <div class="info-text">Maximum 200 characters</div>
+      </div>
+
+      <div class="form-group">
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date" required />
+      </div>
+
+      <div class="form-group">
+        <label for="pin">
+          <input type="checkbox" name="pin" id="pin" value="true" style="width: auto; margin-right: 0.5rem;" />
+          Pin this notice?
+        </label>
+        <div class="info-text">Pinned notices appear at the top</div>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category:</label>
+        <select name="category" id="category" required>
+          <option value="">Select a category...</option>
+          <option value="General">General</option>
+          <option value="Urgent">Urgent</option>
+          <option value="Meeting">Meeting</option>
+          <option value="Event">Event</option>
+          <option value="Announcement">Announcement</option>
+          <option value="Policy">Policy</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Holiday">Holiday</option>
+          <option value="Training">Training</option>
+          <option value="Other">Other</option>
+        </select>
+        <div class="info-text">Or type a custom category</div>
+      </div>
+
+      <div class="form-group">
+        <label for="content">Content:</label>
+        <textarea name="content" id="content" rows="12" required placeholder="Enter the notice content here..."></textarea>
+        <div class="info-text">Provide detailed information about the notice</div>
+      </div>
+
+      <button type="submit">📄 Create Notice File</button>
+    </form>
+  </div>
+
+  <script>
+    // Auto-generate Notice ID
+    function generateNoticeId() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      
+      // Generate a random sequence number (you might want to implement proper sequence tracking)
+      const sequence = Math.floor(Math.random() * 999) + 1;
+      const sequenceStr = String(sequence).padStart(3, '0');
+      
+      const noticeId = `N-${year}${month}${day}-${sequenceStr}`;
+      return noticeId;
+    }
+
+    // Set default date to today
+    function setDefaultDate() {
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0];
+      document.getElementById('date').value = dateStr;
+    }
+
+    // Make category dropdown editable
+    function makeSelectEditable() {
+      const select = document.getElementById('category');
+      const originalOptions = Array.from(select.options).map(opt => ({
+        value: opt.value,
+        text: opt.textContent
+      }));
+
+      select.addEventListener('input', function(e) {
+        const value = e.target.value;
+        
+        // If user types something not in the original options, add it
+        if (value && !originalOptions.some(opt => opt.value === value)) {
+          // Clear existing options and add the custom one
+          select.innerHTML = `<option value="${value}" selected>${value}</option>`;
+          
+          // Add back original options
+          originalOptions.forEach(opt => {
+            if (opt.value) { // Skip empty option
+              const option = document.createElement('option');
+              option.value = opt.value;
+              option.textContent = opt.text;
+              select.appendChild(option);
+            }
+          });
+        }
+      });
+
+      // Make it behave like a combo box
+      select.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === 'Tab') {
+          const value = select.value;
+          if (value && !originalOptions.some(opt => opt.value === value)) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            option.selected = true;
+            select.insertBefore(option, select.firstChild);
+          }
+        }
+      });
+    }
+
+    // Form validation
+    function validateForm() {
+      const form = document.getElementById('noticeForm');
+      
+      form.addEventListener('submit', function(e) {
+        const title = document.getElementById('title').value.trim();
+        const content = document.getElementById('content').value.trim();
+        const category = document.getElementById('category').value.trim();
+        
+        if (!title || !content || !category) {
+          e.preventDefault();
+          alert('Please fill in all required fields.');
+          return false;
+        }
+        
+        if (title.length > 200) {
+          e.preventDefault();
+          alert('Title must be 200 characters or less.');
+          return false;
+        }
+        
+        return true;
+      });
+    }
+
+    // Auto-resize textarea
+    function autoResizeTextarea() {
+      const textarea = document.getElementById('content');
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+      });
+    }
+
+    // Initialize everything when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const noticeId = generateNoticeId();
+      document.getElementById('noticeIdDisplay').textContent = noticeId;
+      document.getElementById('noticeIdInput').value = noticeId;
+      
+      setDefaultDate();
+      makeSelectEditable();
+      validateForm();
+      autoResizeTextarea();
+    });
+
+    // Refresh ID button (optional enhancement)
+    document.getElementById('noticeIdDisplay').addEventListener('click', function() {
+      const newId = generateNoticeId();
+      this.textContent = newId;
+      document.getElementById('noticeIdInput').value = newId;
+    });
+  </script>
+</body>
+</html>
+
