@@ -15,11 +15,12 @@ def index():
             notice_id = request.form['noticeId'].strip()
             title = request.form['title'].strip()
             date = request.form['date'].strip()
+            pin = request.form["pin"].strip()
             category = request.form['category'].strip()
             content = request.form['content'].strip()
 
             # Construct the file content
-            file_content = f"{title}\n{date}\n{category}\n{content}"
+            file_content = f"{title}\n{date}\n{category}\n{pin}\n{content}"
 
             # Save to a .txt file
             filepath = os.path.join(NOTICE_DIR, f"{notice_id}.txt")
