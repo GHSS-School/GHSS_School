@@ -132,7 +132,14 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
+    <div>
+      <h2>Change Website</h2>
+      <form action="{{ url_for('upload_notice') }}" method="POST" enctype="multipart/form-data">
+        <button type="submit">Upload</button>
+    </form>
 
+    </div>
+    <br/>
     <form method="POST" id="noticeForm">
       <div class="form-group">
         <label>Notice ID:</label>
@@ -185,6 +192,7 @@
       </div>
 
       <button type="submit">📄 Create Notice File</button>
+
     </form>
   </div>
 
