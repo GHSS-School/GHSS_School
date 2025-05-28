@@ -45,7 +45,7 @@ def index():
 @app.route('/files', methods=["GET", "POST"])
 def files():
     if request.method == 'GET':
-        return render_template('files_upload.html')
+        return render_template('files.html')
 
     elif request.method == 'POST':
         try:
@@ -95,6 +95,75 @@ def files():
             flash(f"Error creating folder: {e}", "danger")
 
         return redirect(url_for('files'))
+
+
+@app.route('/achievements', methods=["GET", "POST"])
+def achievements():
+    if request.method == 'GET':
+        return render_template('achievements.html')
+
+    elif request.method == 'POST':
+        try:
+            # Get form data
+            folder_name = request.form['folder_name'].strip()
+            title = request.form['title'].strip()
+            category = request.form['category'].strip()
+            date = request.form['date'].strip()
+            description = request.form['description'].strip()
+
+            # Validate required fields
+            if not folder_name or not title or not category or not date:
+                flash("Folder name, title, category, and date are required!", "danger")
+                return redirect(url_for('achievements'))
+
+            # Secure the folder name
+            folder_name = secure_filename(folder_name)
+            if not folder_name:
+                flash("Invalid folder name!", "danger")
+                return redirect(url_for('achievements'))
+
+            # Create folder path
+            folder_path = os.path.join(UPLOADS_DIR, folder_name)
+            os.makedirs(folder_path, exist_ok=True)
+
+            # Create data.txt file with specific format
+            data_content = f"{title}\n{category}\n{date}\n{description}"
+            data_file_path = os.path.join(folder_path, 'data.txt')
+            with open(data_file_path, 'w', encoding='utf-8') as f:
+                f.write(data_content)
+
+            # Handle single image upload
+            image_file = request.files.get('image')
+            image_uploaded = False
+
+            if image_file and image_file.filename:
+                # Get file extension
+                original_filename = secure_filename(image_file.filename)
+                if original_filename:
+                    file_extension = os.path.splitext(original_filename)[1].lower()
+
+                    # Check if it's an image file
+                    allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'}
+                    if file_extension in allowed_extensions:
+                        # Save with new name: image.extension
+                        new_filename = f"image{file_extension}"
+                        file_path = os.path.join(folder_path, new_filename)
+                        image_file.save(file_path)
+                        image_uploaded = True
+                    else:
+                        flash("Only image files are allowed!", "danger")
+                        return redirect(url_for('achievements'))
+
+            success_message = f"Achievement folder '{folder_name}' created successfully!"
+            if image_uploaded:
+                success_message += " Image uploaded and renamed to 'image'."
+
+            flash(success_message, "success")
+
+        except Exception as e:
+            flash(f"Error creating achievement folder: {e}", "danger")
+
+        return redirect(url_for('achievements'))
 
 
 @app.route('/upload', methods=['POST'])
