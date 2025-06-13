@@ -1,5 +1,0 @@
-My First Developed Notice
-2025-06-13
-Urgent
-true
-This is a contetn fot the notice
